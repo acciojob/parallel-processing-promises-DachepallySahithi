@@ -1,1 +1,10 @@
 /*  your css code here. If applicable */
+#loading {
+      display: none;
+      text-align: center;
+    }
+
+    #error {
+      color: red;
+      text-align: center;
+    }

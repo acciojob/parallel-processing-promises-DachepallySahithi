@@ -2,48 +2,38 @@
 const output = document.getElementById("output");
 const btn = document.getElementById("download-images-button");
 const errorDiv = document.getElementById("error");
-const loading = document.getElementById("loading");
-
+    const loading = document.getElementById("loading");
 const images = [
   { url: "https://picsum.photos/id/237/200/300" },
   { url: "https://picsum.photos/id/238/200/300" },
   { url: "https://picsum.photos/id/239/200/300" },
 ];
 
-btn.addEventListener("click", () => {
-  downloadImages(images);
-});
+function downloadImage(image) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img); // Resolves if the image loads successfully
+        img.onerror = () => reject(`Failed to load image's URL: ${image.url}`); // Rejects if the image fails to load
+        img.src = image.url;
+      });
+    }
 
-function downloadImages(imageArray) {
-  loading.style.display = "block";
-  errorDiv.textContent = "";
-  output.innerHTML = "";
+    btn.addEventListener("click", () => {
+      loading.style.display = "block";
+      output.innerHTML = ''; // Clear any previous images
+      errorDiv.innerHTML = ''; // Clear any previous error messages
 
-   const imagePromises = imageArray.map((image) =>
-    fetch(image.url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Failed to load image's URL: ${image.url}`);
-        }
-        return response.blob();
-      })
-      .then((blob) => {
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(blob);
-        img.alt = "Downloaded image";
-        output.appendChild(img);
-      })
-      .catch((error) => {
-        return Promise.reject(error); 
-      })
-  );
+      Promise.all(images.map(downloadImage))
+        .then((imgs) => {
+          loading.style.display = "none";
 
-  Promise.all(imagePromises)
-    .then(() => {
-      loading.style.display = "none";
-    })
-    .catch((error) => {
-      loading.style.display = "none";
-      errorDiv.textContent = error.message;
+          imgs.forEach((img) => {
+            output.appendChild(img);
+          });
+        })
+        .catch((error) => {
+          loading.style.display = "none";
+
+          errorDiv.innerHTML = error; // Display the error in the error div
+        });
     });
-}
