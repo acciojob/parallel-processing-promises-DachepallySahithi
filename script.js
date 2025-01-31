@@ -34,18 +34,15 @@ function downloadImages(imageArray) {
         output.appendChild(img);
       })
       .catch((error) => {
-        return Promise.reject(error); // Propagate the error
+        return Promise.reject(error); 
       })
   );
 
-  // Use Promise.all to download all images in parallel
   Promise.all(imagePromises)
     .then(() => {
-      // Hide the loading spinner when done
       loading.style.display = "none";
     })
     .catch((error) => {
-      // Hide the loading spinner and display the error message
       loading.style.display = "none";
       errorDiv.textContent = error.message;
     });
